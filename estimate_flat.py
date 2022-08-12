@@ -1,6 +1,7 @@
 from itertools import permutations
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 from PIL import Image
 
 locations = {
@@ -58,80 +59,13 @@ detours_to_from = { # detours required when going to a specific target, from ano
     }
 }
 
-
 # VERY rough estimates of distances (arbitrary unit) between locations
-# Assuming a distance of 2 for a jump
-distances_from_to = {
-    "E": { # from entrance
-        "1": 13, # need to go via the chair
-        "2": 12,
-        "3": 9.5,
-    },
-    "1": { # need to visit a socket after visiting the battery
-        "A": 7,
-        "B": 8,
-        "C": 10,
-        "D": 12,
-        "3": 13,
-    },
-    "2": {
-        "A": 8,
-        "B": 7.2,
-        "C": 6.5,
-        "D": 7,
-        "3": 14,
-    },
-    "3": {
-        "A": 13, 
-        "B": 12, 
-        "C": 9.5,
-        "D": 8.5,
-        "1": 19.5,
-        "2": 12,
-        "4": 3,
-        "5": 27, # including an extra 12 for waiting for the platform to move
-    },
-    "4": { # from final position, must do lever first
-        "A": 8,  
-        "B": 7,  
-        "C": 4,  
-        "D": 2.5,
-    },
-    "5": { # must do lever first
-        "A": 12,
-        "B": 11,
-        "C": 8,
-        "D": 6.5,
-    },
-    "A": {
-        "1": 18,
-        "2": 8,
-        "3": 15,
-        "4": 8, # to final position
-        "5": 12,
-    },
-    "B": {
-        "1": 18,
-        "2": 7.2,
-        "3": 14,
-        "4": 7,
-        "5": 11,
-    },
-    "C": {
-        "1": 19.5,
-        "2": 6.5,
-        "3": 11.5,
-        "4": 4,
-        "5": 8,
-    },
-    "D": {
-        "1": 20.5,
-        "2": 7,
-        "3": 10.5,
-        "4": 2.5,
-        "5": 6.5,
-    }
-}
+with open("distances.json", "r") as infile:
+    distances = json.loads(infile.read())
+
+distances_from_to = distances["distances_from_to"]
+extra_time_3_to_4_to_socket = distances["extra_time_3_to_4_to_socket"]
+extra_time_3_to_socket_to_5 = distances["extra_time_3_to_socket_to_5"]
 
 # count = 0
 # for key, val in distances_from_to.items():
@@ -182,11 +116,11 @@ for path in all_paths:
 
     if cur_path.index("4") - cur_path.index("3") == 1:
         # if 3 comes immediately before 4, there's an added distance to run from 4 to the sockets
-        cur_path_length += 6.5 
+        cur_path_length += extra_time_3_to_4_to_socket
 
     if cur_path.index("5") - cur_path.index("3") == 2:
         # if 5 comes two steps after 3, there's an added time to wait for the machine
-        cur_path_length += 3
+        cur_path_length += extra_time_3_to_socket_to_5
 
     valid_paths.append(cur_path)
     valid_path_lengths.append(cur_path_length)
