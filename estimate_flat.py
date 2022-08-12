@@ -115,7 +115,7 @@ for path in all_paths:
         # if 5 comes two steps after 3, there's an added time to wait for the machine
         cur_path_length += extra_time_3_to_socket_to_5
 
-    if cur_path.index("5") - cur_path.index("4") == 2:
+    if cur_path.index("4") - cur_path.index("3") == 2:
         # if 4 comes two steps after 3, there's an added time to wait for the machine
         cur_path_length += extra_time_3_to_socket_to_4
 
