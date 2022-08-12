@@ -18,44 +18,36 @@ locations = {
 }
 
 coords = { # coords are only for visualization on the diagram
-    "E": (330, 863),
-    "1": (42, 356),
-    "2": (526, 443),
-    "3": (742, 729),
-    "4": (773, 187),
-    "5": (825, 43),
-    "A": (283, 163),
-    "B": (356, 163),
-    "C": (537, 163),
-    "D": (627, 163),
+    "E": (256, 830),
+    "1": (28, 353),
+    "2": (487, 371),
+    "3": (776, 718),
+    "4": (830, 134),
+    "5": (831, 26),
+    "A": (204, 31),
+    "B": (316, 31),
+    "C": (604, 31),
+    "D": (716, 31),
 }
 
 detours_to = { # detours always required to reach these targets
-    "1": (118, 674),
+    "1": (85, 569),
     "5": (813, 208)
 }
 
 detours_to_from = { # detours required when going to a specific target, from another specific origin
     "2": {
-        "E": (224, 349)
+        "E": (255, 273)
     },
     "3": {
-        "A": (714, 349),
-        "B": (714, 349),
-        "C": (714, 349),
-        "D": (714, 349),
+        "A": (601, 268),
+        "B": (601, 268),
     },
     "A": {
-        "3": (721, 340)
+        "3": (601, 268),
     },
     "B": {
-        "3": (721, 340)
-    },
-    "C": {
-        "3": (721, 340)
-    },
-    "D": {
-        "3": (721, 340)
+        "3": (601, 268),
     }
 }
 
@@ -66,6 +58,7 @@ with open("distances.json", "r") as infile:
 distances_from_to = distances["distances_from_to"]
 extra_time_3_to_4_to_socket = distances["extra_time_3_to_4_to_socket"]
 extra_time_3_to_socket_to_5 = distances["extra_time_3_to_socket_to_5"]
+extra_time_3_to_socket_to_4 = distances["extra_time_3_to_socket_to_4"]
 
 # count = 0
 # for key, val in distances_from_to.items():
@@ -122,6 +115,10 @@ for path in all_paths:
         # if 5 comes two steps after 3, there's an added time to wait for the machine
         cur_path_length += extra_time_3_to_socket_to_5
 
+    if cur_path.index("5") - cur_path.index("4") == 2:
+        # if 4 comes two steps after 3, there's an added time to wait for the machine
+        cur_path_length += extra_time_3_to_socket_to_4
+
     valid_paths.append(cur_path)
     valid_path_lengths.append(cur_path_length)
 
@@ -129,13 +126,14 @@ inds = np.argsort(valid_path_lengths)
 
 print("Best:")
 for i in inds[:10]:
-    print(" -> ".join(valid_paths[i]), "  Dist:", valid_path_lengths[i])
+    print(" -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
 
 print("Worst:")
 for i in inds[-10:]:
-    print(" -> ".join(valid_paths[i]), "  Dist:", valid_path_lengths[i])
+    print(" -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
 
 visualize_paths = [
+    valid_paths[inds[0]],
     ["E", "3", "1", "A", "2", "C", "4", "D", "5", "B"],
     ["E", "3", "1", "A", "2", "C", "5", "D", "4", "B"],
     ["E", "3", "1", "A", "2", "D", "4", "C", "5", "B"],
@@ -143,12 +141,12 @@ visualize_paths = [
     ["E", "2", "B", "3", "5", "A", "4", "C", "1", "D"]
 ]
 
-im = Image.open("flat_map_diagram.png")
+im = Image.open("Flat2.png")
 for path in visualize_paths:
     ind = valid_paths.index(path)
     plt.figure()
     plt.imshow(im)
-    plt.title(f"Path length: {valid_path_lengths[ind]}")
+    plt.title(f"Path length: {valid_path_lengths[ind]:.2f}")
     for key, item in coords.items():
         plt.plot(*item, "o", markersize = 10, label = key)
 
