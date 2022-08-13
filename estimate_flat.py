@@ -58,7 +58,6 @@ with open("distances.json", "r") as infile:
 distances_from_to = distances["distances_from_to"]
 extra_time_3_to_4_to_socket = distances["extra_time_3_to_4_to_socket"]
 extra_time_3_to_socket_to_5 = distances["extra_time_3_to_socket_to_5"]
-extra_time_3_to_socket_to_4 = distances["extra_time_3_to_socket_to_4"]
 
 # count = 0
 # for key, val in distances_from_to.items():
@@ -115,54 +114,63 @@ for path in all_paths:
         # if 5 comes two steps after 3, there's an added time to wait for the machine
         cur_path_length += extra_time_3_to_socket_to_5
 
-    if cur_path.index("4") - cur_path.index("3") == 2:
-        # if 4 comes two steps after 3, there's an added time to wait for the machine
-        cur_path_length += extra_time_3_to_socket_to_4
-
     valid_paths.append(cur_path)
     valid_path_lengths.append(cur_path_length)
 
 inds = np.argsort(valid_path_lengths)
 
-print("Best:")
-for i in inds[:10]:
-    print(" -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
+# print("Best:")
+# for i in inds[:10]:
+#     print(" -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
 
-print("Worst:")
-for i in inds[-10:]:
-    print(" -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
+# print("Worst:")
+# for i in inds[-10:]:
+#     print(" -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
+
+for n, i in enumerate(inds):
+    print(f"{n:>4d}:", " -> ".join(valid_paths[i]), "  Dist:", f"{valid_path_lengths[i]:.2f}")
 
 visualize_paths = [
     valid_paths[inds[0]],
-    ["E", "3", "1", "A", "2", "C", "4", "D", "5", "B"],
-    ["E", "3", "1", "A", "2", "C", "5", "D", "4", "B"],
-    ["E", "3", "1", "A", "2", "D", "4", "C", "5", "B"],
-    ["E", "3", "1", "A", "2", "B", "4", "C", "5", "D"],
-    ["E", "2", "B", "3", "5", "A", "4", "C", "1", "D"]
+    valid_paths[inds[5]],
+    valid_paths[inds[17]],
+    valid_paths[inds[71]],
+    valid_paths[inds[92]],
+    valid_paths[inds[-1]],
 ]
 
+titles = [
+    "Fast, but tricky",
+    "",
+    "",
+    "",
+    "",
+    "Possibly the slowest possible route",
+]
+
+fig, axs = plt.subplots(2, 3)
+
 im = Image.open("Flat2.png")
-for path in visualize_paths:
+for path, ax, title in zip(visualize_paths, np.ravel(axs), titles):
     ind = valid_paths.index(path)
-    plt.figure()
-    plt.imshow(im)
-    plt.title(f"Path length: {valid_path_lengths[ind]:.2f}")
+    ax.imshow(im)
+    ax.set_title(f"Path length: {valid_path_lengths[ind]:.2f}  {title}")
     for key, item in coords.items():
-        plt.plot(*item, "o", markersize = 10, label = key)
+        ax.plot(*item, "o", markersize = 10, label = key)
 
     for subpath_start, subpath_target in zip(path[:-1], path[1:]):
         start_coord = coords[subpath_start]
         target_coord = coords[subpath_target]
         if subpath_target in detours_to:
             detour_coord = detours_to[subpath_target]
-            plt.plot([start_coord[0], detour_coord[0], target_coord[0]],
+            ax.plot([start_coord[0], detour_coord[0], target_coord[0]],
                      [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
         elif subpath_target in detours_to_from and subpath_start in detours_to_from[subpath_target]:
             detour_coord = detours_to_from[subpath_target][subpath_start]
-            plt.plot([start_coord[0], detour_coord[0], target_coord[0]],
+            ax.plot([start_coord[0], detour_coord[0], target_coord[0]],
                         [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
         else:
-            plt.plot([start_coord[0], target_coord[0]],
+            ax.plot([start_coord[0], target_coord[0]],
                      [start_coord[1], target_coord[1]], color = "black")
 
 plt.show()
