@@ -164,13 +164,39 @@ for path, ax, title in zip(visualize_paths, np.ravel(axs), titles):
         if subpath_target in detours_to:
             detour_coord = detours_to[subpath_target]
             ax.plot([start_coord[0], detour_coord[0], target_coord[0]],
-                     [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
+                    [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
         elif subpath_target in detours_to_from and subpath_start in detours_to_from[subpath_target]:
             detour_coord = detours_to_from[subpath_target][subpath_start]
             ax.plot([start_coord[0], detour_coord[0], target_coord[0]],
-                        [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
+                    [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
         else:
             ax.plot([start_coord[0], target_coord[0]],
-                     [start_coord[1], target_coord[1]], color = "black")
+                    [start_coord[1], target_coord[1]], color = "black")
 
 plt.show()
+
+# for i, ind in enumerate(inds):
+#     path = valid_paths[ind]
+#     plt.figure(figsize = (10,10))
+#     plt.imshow(im)
+#     plt.title(f"Path length: {valid_path_lengths[ind]:.2f}")
+#     for key, item in coords.items():
+#         plt.plot(*item, "o", markersize = 10, label = key)
+
+#     for subpath_start, subpath_target in zip(path[:-1], path[1:]):
+#         start_coord = coords[subpath_start]
+#         target_coord = coords[subpath_target]
+#         if subpath_target in detours_to:
+#             detour_coord = detours_to[subpath_target]
+#             plt.plot([start_coord[0], detour_coord[0], target_coord[0]],
+#                      [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
+#         elif subpath_target in detours_to_from and subpath_start in detours_to_from[subpath_target]:
+#             detour_coord = detours_to_from[subpath_target][subpath_start]
+#             plt.plot([start_coord[0], detour_coord[0], target_coord[0]],
+#                      [start_coord[1], detour_coord[1], target_coord[1]], color = "black")
+#         else:
+#             plt.plot([start_coord[0], target_coord[0]],
+#                      [start_coord[1], target_coord[1]], color = "black")
+
+#     plt.savefig(f"all_routes/{i:>04d}.png")
+#     plt.close()
