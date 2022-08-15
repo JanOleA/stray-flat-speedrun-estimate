@@ -135,7 +135,7 @@ visualize_paths = [
     valid_paths[inds[5]],
     valid_paths[inds[17]],
     valid_paths[inds[71]],
-    valid_paths[inds[92]],
+    valid_paths[inds[114]],
     valid_paths[inds[-1]],
 ]
 
